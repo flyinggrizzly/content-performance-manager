@@ -45,6 +45,12 @@ RSpec.describe Importers::NumberOfViewsByOrganisation do
 
         subject.run('the-slug')
       end
+
+      it "uses the default value if the batch size isn't set" do
+        expect_any_instance_of(GoogleAnalyticsService).to receive(:page_views).once.and_return([])
+
+        subject.run('the-slug')
+      end
     end
   end
 end

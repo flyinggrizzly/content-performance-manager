@@ -21,7 +21,8 @@ RSpec.describe Importers::NumberOfViewsByOrganisation do
         ]
       )
 
-      subject.batch_size = 1
+      stub_const("Importers::NumberOfViewsByOrganisation::BATCH_SIZE", 1)
+
       subject.run('the-slug')
 
       content_item_one = ContentItem.find_by(base_path: 'the-link/first')
@@ -35,18 +36,20 @@ RSpec.describe Importers::NumberOfViewsByOrganisation do
       it "makes three requests when the batch size is one" do
         expect_any_instance_of(GoogleAnalyticsService).to receive(:page_views).exactly(3).times.and_return([])
 
+        stub_const("Importers::NumberOfViewsByOrganisation::BATCH_SIZE", 1)
+
         subject.run('the-slug')
       end
 
       it "makes two requests when the batch size is two" do
         expect_any_instance_of(GoogleAnalyticsService).to receive(:page_views).twice.and_return([])
 
-        subject.batch_size = 2
+        stub_const("Importers::NumberOfViewsByOrganisation::BATCH_SIZE", 2)
 
         subject.run('the-slug')
       end
 
-      it "uses the default value if the batch size isn't set" do
+      it "uses a default value if the environment variable is not set" do
         expect_any_instance_of(GoogleAnalyticsService).to receive(:page_views).once.and_return([])
 
         subject.run('the-slug')

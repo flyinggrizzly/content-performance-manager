@@ -5,9 +5,12 @@ RSpec.describe Metrics::NumberOfPdfsMetric do
 
   let(:content_with_pdfs) {
     {
-      :details => { 
-        "documents" => [
+      details: {
+        documents: [
           '<div class=\"attachment-details\">\n<a href=\"link.pdf\">1</a>\n\n\n\n</div>',
+          '<div class=\"attachment-details\">\n<a href=\"link.pdf\">1</a>\n\n\n\n</div>'
+        ],
+        final_outcome_documents: [
           '<div class=\"attachment-details\">\n<a href=\"link.pdf\">1</a>\n\n\n\n</div>'
         ]
       }
@@ -16,7 +19,7 @@ RSpec.describe Metrics::NumberOfPdfsMetric do
 
   let(:content_without_pdfs) {
     {
-      :details => { 
+      details: {
         "documents" => ['<div class=\"attachment-details\">\n<a href=\"link.txt\">1</a>\n\n\n\n</div>']
       }
     }
@@ -24,19 +27,19 @@ RSpec.describe Metrics::NumberOfPdfsMetric do
 
   let(:content_without_documents) {
     {
-      :details => {}
+      details: {}
     }
   }
 
   it "returns the number of pdfs present" do
-    expect(subject.new(content_with_pdfs).build).to eq({ number_of_pdfs: 2 })
+    expect(subject.new(content_with_pdfs).run).to eq(number_of_pdfs: 3)
   end
 
   it "returns 0 if no pdfs are present" do
-    expect(subject.new(content_without_pdfs).build).to eq({ number_of_pdfs: 0 })
+    expect(subject.new(content_without_pdfs).run).to eq(number_of_pdfs: 0)
   end
 
   it "returns 0 if no documents are present" do
-    expect(subject.new(content_without_documents).build).to eq({ number_of_pdfs: 0 })
+    expect(subject.new(content_without_documents).run).to eq(number_of_pdfs: 0)
   end
 end

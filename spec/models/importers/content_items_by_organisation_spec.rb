@@ -10,13 +10,15 @@ RSpec.describe Importers::ContentItemsByOrganisation do
         attrs1 = attributes_for(:content_item)
         attrs2 = attributes_for(:content_item)
         allow_any_instance_of(ContentItemsService).to receive(:find_each).with('the-slug').and_yield(attrs1).and_yield(attrs2)
-
+        allow_any_instance_of(MetricBuilder).to receive(:run_all).with(attrs1).and_return(attrs1)
+        allow_any_instance_of(MetricBuilder).to receive(:run_all).with(attrs2).and_return(attrs2)
         expect { subject.run('the-slug') }.to change { ContentItem.count }.by(2)
       end
 
       it 'updates the attributes' do
         attrs1 = attributes_for(:content_item, base_path: 'the-link-value', title: 'the-title')
         allow_any_instance_of(ContentItemsService).to receive(:find_each).and_yield(attrs1)
+        allow_any_instance_of(MetricBuilder).to receive(:run_all).with(attrs1).and_return(attrs1)
         subject.run('the-slug')
 
         attributes = ContentItem.find_by(base_path: 'the-link-value').attributes.symbolize_keys
@@ -30,6 +32,7 @@ RSpec.describe Importers::ContentItemsByOrganisation do
       it 'does not create a new one' do
         attributes = { content_id: content_item.content_id, base_path: 'the-link' }
         allow_any_instance_of(ContentItemsService).to receive(:find_each).and_yield(attributes)
+        allow_any_instance_of(MetricBuilder).to receive(:run_all).with(attributes).and_return(attributes)
 
         expect { subject.run('the-slug') }.to change { ContentItem.count }.by(0)
       end
@@ -38,6 +41,7 @@ RSpec.describe Importers::ContentItemsByOrganisation do
         content_item.update(title: 'old-title')
         attributes = { content_id: content_item.content_id, title: 'the-new-title', base_path: 'the-link' }
         allow_any_instance_of(ContentItemsService).to receive(:find_each).and_yield(attributes)
+        allow_any_instance_of(MetricBuilder).to receive(:run_all).with(attributes).and_return(attributes)
 
         subject.run('the-slug')
 

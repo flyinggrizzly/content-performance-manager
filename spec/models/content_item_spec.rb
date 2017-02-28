@@ -27,7 +27,7 @@ RSpec.describe ContentItem, type: :model do
       expect { ContentItem.create_or_update!(content_item_1, organisation) }.to change { ContentItem.count }.by(0)
     end
 
-    it "only saves attributes that exist in the model" do
+    it "discards attributes not found on the model" do
       content_item_with_extra = { content_id: "with_extra", extra: "an extra attribute" }
       previous_count = ContentItem.count
 
